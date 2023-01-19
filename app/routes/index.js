@@ -74,4 +74,64 @@ router.post('/productEdit/:id', (req, res) => {
   })
 })
 
+/*Page Import Stock*/
+router.get('/importStock', (req, res) => {
+  res.render('importStock');
+})
+router.post('/importStock', (req, res) => {
+  var sql = 'INSERT INTO tb_import_stock(product_id, qty, import_date) VALUES(?, ?, NOW())';
+  var params = [req.body.product_id, req.body.qty];
+  mysql.query(sql, params, (err, rs) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect('importStockSuccess');
+    }
+  })
+})
+router.get('/importStockSuccess', (req, res) => {
+  res.render('importStockSuccess');
+})
+
+/*search product*/
+router.post('/searchProduct', (req,res) => {
+  var sql = 'SELECT * FROM tb_product WHERE barcode = ?';
+  mysql.query(sql, req.body.barcode, (err,rs) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.json(rs);
+    }
+  })
+})
+
+
+/*Page Out Stock*/
+router.get('/outStock', (req, res) => {
+  res.render('outStock');
+})
+router.post('/outStock', (req, res) => {
+  var sql = 'INSERT INTO tb_outstock(product_id, qty, outdate) VALUES(?, ?, NOW())';
+  var params = [req.body.product_id, req.body.qty];
+  mysql.query(sql, params, (err, rs) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect('outStockSuccess');
+    }
+  })
+})
+router.get('/outStockSuccess', (req, res) => {
+  res.render('outStockSuccess');
+})
+
+/*report stock*/
+router.get('/report', (req, res) => {
+  var data = { from: '', to: '', products: [] };
+  res.render('reportStock', data);
+})
+
+
+
+
 module.exports = router;

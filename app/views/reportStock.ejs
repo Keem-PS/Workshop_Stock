@@ -1,0 +1,27 @@
+<%- include("header")%>
+
+<div class="panel">
+    <div class="panel-header">
+        <i class="fa fa-bar-chart"></i> รายงานสต้อก
+    </div>
+    <div class="panel-body">
+        <form method="post">
+            <div style="display: inline-block;">
+                <label>จากวันที่</label>
+                <input type="date" name="from" value="<%= from %>" />
+            </div>
+            <div style="display: inline-block;">
+                <label>ถึงวันที่</label>
+                <input type="date" name="to" value="<%= to %>" />
+            </div>
+            <button type="submit" class="btn">
+                <i class="fa fa-check"></i> แสดงข้อมูล
+            </button>
+        </form>
+    </div>
+</div>
+
+
+
+
+<%- include("footer")%>
