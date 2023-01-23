@@ -13,6 +13,12 @@ const mysql = mysql2.createPool({
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+router.get('/home', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
+
+//GET Product page.
+
 router.get('/product', (req, res) => {
   mysql.query('SELECT * FROM tb_product', (err, rs) => {
     if (err) {
@@ -74,7 +80,7 @@ router.post('/productEdit/:id', (req, res) => {
   })
 })
 
-/*Page Import Stock*/
+/*GET Import Stock page*/
 router.get('/importStock', (req, res) => {
   res.render('importStock');
 })
@@ -129,6 +135,40 @@ router.get('/outStockSuccess', (req, res) => {
 router.get('/report', (req, res) => {
   var data = { from: '', to: '', products: [] };
   res.render('reportStock', data);
+})
+router.post('/report', (req, res) => {
+  var from = req.body.from + ' 00:00';
+  from = from.replace('/', '-');
+
+  var to = req.body.to + ' 23:59';
+  to = to.replace('/', '-');
+
+  var sql = `
+    SELECT 
+      tb_product.barcode,
+      tb_product.name,
+      (
+        SELECT SUM(qty) FROM tb_import_stock
+        WHERE (import_date BETWEEN ? AND ?)
+        AND product_id = tb_product.id
+      ) AS total_import,
+      (
+        SELECT SUM(qty) FROM tb_outstock
+        WHERE (outdate BETWEEN ? AND ?)
+        AND product_id = tb_product.id
+      ) AS total_out
+    FROM tb_product
+  `;
+  var params = [from, to, from, to];
+
+  mysql.query(sql, params, (err, rs) => {
+    if(err) {
+      res.send(err);
+    } else {
+      var data = { from: req.body.from, to: req.body.to, products: rs};
+      res.render('reportStock', data);
+    }
+  })
 })
 
 
